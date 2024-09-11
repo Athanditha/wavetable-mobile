@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.WaveTable"
+        tools:targetApi="31">
+        <activity
+            android:name=".screens.Cart"
+            android:exported="false"
+            android:label="@string/title_activity_cart"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Wishlist"
+            android:exported="false"
+            android:label="@string/title_activity_wishlist"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Items"
+            android:exported="false"
+            android:label="@string/title_activity_items"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Notifications"
+            android:exported="false"
+            android:label="@string/title_activity_notifications"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Notifs"
+            android:exported="false"
+            android:label="@string/title_activity_notifs"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Account"
+            android:exported="false"
+            android:label="@string/title_activity_account"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".Wishlist"
+            android:exported="false"
+            android:label="@string/title_activity_wishlist"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".ui.theme.Notifications"
+            android:exported="false"
+            android:label="@string/title_activity_notifications"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Register"
+            android:exported="false"
+            android:label="@string/title_activity_register"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.MainMenu"
+            android:exported="false"
+            android:label="@string/title_activity_main_menu"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".HomeScreen"
+            android:exported="false"
+            android:label="@string/title_activity_home_screen"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".screens.Login"
+            android:exported="false"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.WaveTable" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.WaveTable">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
