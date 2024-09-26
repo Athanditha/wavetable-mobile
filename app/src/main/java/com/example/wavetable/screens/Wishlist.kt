@@ -119,12 +119,14 @@ fun WishlistItemCard(item: Item, modifier: Modifier = Modifier) {
             .clip(RoundedCornerShape(10.dp))
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceDim)
-            .border(width = 1.dp, color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp))
+            .border(width = 1.dp, color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp)),
+        verticalArrangement = Arrangement.SpaceAround
     ) {
         // Row to display the item's image
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
                 painter = painterResource(id = item.imageResourceId),
@@ -140,8 +142,8 @@ fun WishlistItemCard(item: Item, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(10.dp)
                     .width(220.dp)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxHeight()
+                    .fillMaxWidth(),
             ){
                 Text(
                     text = stringResource(item.stringResourceId),

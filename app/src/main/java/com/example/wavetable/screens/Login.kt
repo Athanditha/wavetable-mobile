@@ -118,8 +118,9 @@ fun LoginLMNT(
                 }
                 TextField(
                     value = username,
+                    singleLine = true,
                     onValueChange = { username = it },
-                    label = { Text("Username", style = MaterialTheme.typography.headlineMedium,
+                    label = { Text("Username", style = MaterialTheme.typography.headlineSmall,
                         color = colorScheme.onSurface) },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -131,8 +132,9 @@ fun LoginLMNT(
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
                     value = password,
+                    singleLine = true,
                     onValueChange = { password = it },
-                    label = { Text("Password", style = MaterialTheme.typography.headlineMedium,
+                    label = { Text("Password", style = MaterialTheme.typography.headlineSmall,
                         color = colorScheme.onSurface) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier

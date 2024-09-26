@@ -65,10 +65,12 @@ fun AccountUI(navController: NavHostController, modifier: Modifier = Modifier) {
                 .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.Center
         ) {
-            ProfileHeader()
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
             ) {
+                item {
+                    ProfileHeader()
+                }
                 item {
                     ProfileSection()
                 }
@@ -122,8 +124,7 @@ fun SettingsItem(title: String, description: String) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .clickable { /* Handle click */ },
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(8.dp)
     ) {
         Row(
             modifier = Modifier
@@ -157,7 +158,10 @@ fun SettingsItem(title: String, description: String) {
 @Composable
 fun Buttons() {
     Column {
-        Row {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Button(
                 onClick = { /* Handle Edit */ },
                 modifier = Modifier
@@ -173,7 +177,7 @@ fun Buttons() {
                 )
             }
             Button(
-                onClick = { /* Handle logout */ },
+                onClick = { /* Handle Delete*/ },
                 modifier = Modifier
                     .width(200.dp)
                     .padding(16.dp),
@@ -189,7 +193,7 @@ fun Buttons() {
             }
         }
         Button(
-            onClick = { /* Handle logout */ },
+            onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),

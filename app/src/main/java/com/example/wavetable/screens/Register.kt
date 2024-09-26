@@ -115,7 +115,7 @@ fun RegisterApp(
                     Text(
                         text = "Register",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.fillMaxWidth(),
                         color = colorScheme.onSecondary
                     )
@@ -127,10 +127,11 @@ fun RegisterApp(
                     label = {
                         Text(
                             "Username",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
@@ -146,12 +147,13 @@ fun RegisterApp(
                     label = {
                         Text(
                             "Password",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
                         unfocusedContainerColor = Color.Transparent,
@@ -167,11 +169,12 @@ fun RegisterApp(
                     label = {
                         Text(
                             "First Name",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
                         unfocusedContainerColor = Color.Transparent
@@ -186,11 +189,12 @@ fun RegisterApp(
                     label = {
                         Text(
                             "Last Name",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
                         unfocusedContainerColor = Color.Transparent
@@ -205,11 +209,12 @@ fun RegisterApp(
                     label = {
                         Text(
                             "Email",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
                         unfocusedContainerColor = Color.Transparent
@@ -224,11 +229,12 @@ fun RegisterApp(
                     label = {
                         Text(
                             "Address",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
                         unfocusedContainerColor = Color.Transparent
@@ -240,10 +246,11 @@ fun RegisterApp(
                 TextField(
                     value = phoneNumber,
                     onValueChange = { phoneNumber = it },
+                    singleLine = true,
                     label = {
                         Text(
                             "Phone Number",
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     },
@@ -257,7 +264,7 @@ fun RegisterApp(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             Button(
-                onClick = { navController.navigate("home") },
+                onClick = { navController.navigate("login") },
                 modifier = Modifier
                     .padding(horizontal = 40.dp, vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(
