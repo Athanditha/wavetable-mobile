@@ -239,8 +239,8 @@ fun Slideshow(slideInterval: Long = 5000) {
 
     val imageResources = listOf(
         R.drawable.promo1,
-        R.drawable.prod2,
-        R.drawable.prod3
+        R.drawable.promo2,
+        R.drawable.promo3
     )
 
     var currentIndex by remember { mutableStateOf(0) }

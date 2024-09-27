@@ -35,7 +35,9 @@ import com.example.wavetable.R
 
 @Composable
 fun TopNav(showSearch: Boolean, navController: NavController) {
-    var search by remember { mutableStateOf("Search") }
+    var search by remember { mutableStateOf("") }
+
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
