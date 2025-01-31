@@ -153,7 +153,7 @@ fun MainUI(navController: NavHostController, itemViewModel: ItemViewModel = view
                         }
                     )
                 }
-                val categories = listOf("Headphones", "Speakers", "Mixers", "Amps")
+                 val categories = listOf("Headphones", "Speakers", "Mixers", "Amps")
 
                 ContentSection(title = "Categories") {
                     ListDisplay(
