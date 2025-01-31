@@ -1,5 +1,6 @@
 package com.example.wavetable
 
+
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -20,7 +21,6 @@ import com.example.wavetable.screens.AccountUI
 import com.example.wavetable.screens.ItemsUI
 import com.example.wavetable.screens.LoginLMNT
 import com.example.wavetable.screens.MainUI
-import com.example.wavetable.screens.WishlistUI
 import com.example.wavetable.ui.theme.AppTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -33,6 +33,7 @@ import com.example.wavetable.navbar.BottomNav
 import com.example.wavetable.navbar.TopNav
 import com.example.wavetable.screens.CartUI
 import com.example.wavetable.screens.RegisterApp
+import com.example.wavetable.screens.WishlistUI
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -70,7 +71,10 @@ fun AppNav(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            if (showTopAndBottomNav) TopNav(showSearch = currentRoute == "home", navController = navController)
+            if (showTopAndBottomNav) TopNav(
+                showSearch = currentRoute == "home",
+                navController = navController
+            )
         },
         bottomBar = {
             if (showTopAndBottomNav) BottomNav(navController = navController)
@@ -80,10 +84,30 @@ fun AppNav(modifier: Modifier = Modifier) {
             navController = navController,
             startDestination = "login",
             modifier = Modifier.padding(innerPadding), // Apply inner padding to avoid overlap with bottom bar
-            enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(700)) },
-            exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(700)) },
-            popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(700)) },
-            popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, animationSpec = tween(700)) }
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
         ) {
             composable("cart") {
                 AppTheme {
@@ -97,7 +121,7 @@ fun AppNav(modifier: Modifier = Modifier) {
             }
             composable("login") {
                 AppTheme {
-                    LoginLMNT(Login = { navController.navigate("home")}, Register = { navController.navigate("register")})
+                    LoginLMNT(navController = navController)
                 }
             }
             composable("register") {
@@ -121,14 +145,13 @@ fun AppNav(modifier: Modifier = Modifier) {
                 }
             }
             composable(
-                route = "detailedItemView/{itemId}",
-                arguments = listOf(navArgument("itemId") { type = NavType.IntType })
+                "detailedItemView/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.StringType })
             ) { backStackEntry ->
-                val itemId = backStackEntry.arguments?.getInt("itemId")
-                val item = Datasource().loadItems().find { it.imageResourceId == itemId }
-                item?.let {
-                    DetailedItemView(item = it, navController = navController)
+                val id = checkNotNull(backStackEntry.arguments?.getString("id")) {
+                    "Item ID should not be null"
                 }
+                DetailedItemView(id = id, navController = navController)
             }
         }
     }

@@ -1,9 +1,13 @@
 package com.example.wavetable.screens
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,6 +48,19 @@ import com.example.wavetable.R
 import com.example.wavetable.navbar.BottomNav
 import com.example.wavetable.navbar.TopNav
 import com.example.wavetable.ui.theme.AppTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import com.example.wavetable.viewmodel.AuthViewModel
+import java.io.File
+import android.content.Context
+import android.widget.Toast
 
 class Account : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,156 +75,147 @@ class Account : ComponentActivity() {
 }
 
 @Composable
-fun AccountUI(navController: NavHostController, modifier: Modifier = Modifier) {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Center
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                item {
-                    ProfileHeader()
-                }
-                item {
-                    ProfileSection()
-                }
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Buttons()
-                }
-            }
+fun AccountUI(navController: NavHostController) {
+    val context = LocalContext.current
+    val authViewModel: AuthViewModel = viewModel()
+    val currentUser = authViewModel.authRepository.currentUser
+
+    var profileImageUri by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            profileImageUri = saveImageToLocal(context, bitmap)
         }
     }
 
-
-
-
-@Composable
-fun ProfileHeader() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.jonesy), // Replace with your profile picture resource
-            contentDescription = "Profile Picture",
+        Box(
             modifier = Modifier
-                .size(100.dp)
-                .clip(RoundedCornerShape(50.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer) // Placeholder background
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-}
-
-@Composable
-fun ProfileSection() {
-    Column {
-        SettingsItem("User Name", "Jonesy")
-        SettingsItem("Password", "********")
-        SettingsItem("E-Mail", "jonesy@fortnite.com")
-        SettingsItem("Address", "Tilted Towers")
-        SettingsItem("Phone No.", "0719091920")
-    }
-}
-
-@Composable
-fun SettingsItem(title: String, description: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-            .clickable { /* Handle click */ },
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface)
+                .clickable { launcher.launch() },
+            contentAlignment = Alignment.Center
+        ) {
+            if (profileImageUri != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(profileImageUri),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Text(
+                    text = "Add Photo",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+        // Profile Section
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 14.sp
+                .padding(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
             )
+        ) {
             Column(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-                    .width(200.dp)
-                    .padding(start = 8.dp)
-
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(text = description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 14.sp,
+                Text(
+                    text = "Account Information",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+                
+                // Email
+                Column {
+                    Text(
+                        text = "Email",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Text(
+                        text = currentUser?.email ?: "Not signed in",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // User ID
+                Column {
+                    Text(
+                        text = "User ID",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = currentUser?.uid ?: "Not available",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
-    }
-}
 
-@Composable
-fun Buttons() {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { /* Handle Edit */ },
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer // Background color
-                        )
-            ) {
-                Text(
-                    text = "Edit",
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            Button(
-                onClick = { /* Handle Delete*/ },
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer // Background color
-                )
-
-            ) {
-                Text(
-                    text = "Delete",
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
-        }
+        // Logout Button
         Button(
-            onClick = {},
+            onClick = {
+                authViewModel.logout { success ->
+                    if (success) {
+                        Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    } else {
+                        Toast.makeText(context, "Logout failed. Please try again.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 32.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer // Background color
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         ) {
             Text(
                 text = "Logout",
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
             )
         }
     }
 }
+
+fun saveImageToLocal(context: Context, bitmap: Bitmap): String {
+    val file = File(context.cacheDir, "${System.currentTimeMillis()}.jpg")
+    file.outputStream().use {
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+    }
+    return file.absolutePath
+}
+
+
 
 @Preview
 @Composable

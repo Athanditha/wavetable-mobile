@@ -23,11 +23,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +48,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wavetable.R
 import com.example.wavetable.ui.theme.AppTheme
+import com.example.wavetable.viewmodel.AuthViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 class Login : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +62,7 @@ class Login : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppTheme {
-                LoginLMNT(Login = { /*TODO*/ }, Register = { /*TODO*/ })
+                LoginLMNT(navController = rememberNavController())
             }
         }
     }
@@ -61,12 +70,14 @@ class Login : ComponentActivity() {
 
 @Composable
 fun LoginLMNT(
-    Login: () -> Unit,
-    Register: () -> Unit,
-    modifier: Modifier= Modifier,
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
+    
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     val colorScheme = MaterialTheme.colorScheme
 
     LazyColumn(
@@ -116,11 +127,24 @@ fun LoginLMNT(
                         color = colorScheme.onSecondary
                     )
                 }
+
+                // Show error message if any
+                when (val state = authState) {
+                    is AuthViewModel.AuthState.Error -> {
+                        Text(
+                            text = state.message,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    else -> {}
+                }
+
                 TextField(
                     value = username,
                     singleLine = true,
                     onValueChange = { username = it },
-                    label = { Text("Username", style = MaterialTheme.typography.headlineSmall,
+                    label = { Text("Email", style = MaterialTheme.typography.headlineSmall,
                         color = colorScheme.onSurface) },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -147,22 +171,41 @@ fun LoginLMNT(
                     )
                 )
             }
-            Button(
-                onClick = Login,
-                modifier = Modifier
-                    .padding(horizontal = 40.dp, vertical = 16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorScheme.secondaryContainer,
-                    contentColor = colorScheme.onSecondaryContainer
-                )
-            ) {
-                Text(
-                    "Login",
-                    color = colorScheme.onSecondaryContainer,
-                    style = MaterialTheme.typography.displaySmall,
-                    fontSize = 30.sp
-                )
+
+            when (val state = authState) {
+                is AuthViewModel.AuthState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(16.dp),
+                        color = colorScheme.primary
+                    )
+                }
+                is AuthViewModel.AuthState.Success -> {
+                    LaunchedEffect(Unit) {
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                }
+                else -> {
+                    Button(
+                        onClick = { authViewModel.login(username, password) },
+                        modifier = Modifier
+                            .padding(horizontal = 40.dp, vertical = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorScheme.secondaryContainer,
+                            contentColor = colorScheme.onSecondaryContainer
+                        )
+                    ) {
+                        Text(
+                            "Login",
+                            color = colorScheme.onSecondaryContainer,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontSize = 30.sp
+                        )
+                    }
+                }
             }
+
             Spacer(modifier = Modifier.height(10.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
@@ -174,10 +217,9 @@ fun LoginLMNT(
                 Spacer(modifier = Modifier.width(4.dp))
                 ClickableText(
                     text = AnnotatedString("Register"),
-                    onClick = { Register() },
+                    onClick = { navController.navigate("register") },
                     style = TextStyle(
                         color = colorScheme.primary,
-
                         fontSize = 14.sp
                     )
                 )
@@ -191,6 +233,6 @@ fun LoginLMNT(
 @Composable
 fun LoginLMNTPreview() {
     AppTheme {
-        LoginLMNT(Login = {}, Register = {})
+        LoginLMNT(navController = rememberNavController())
     }
     }

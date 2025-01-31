@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +48,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.wavetable.R
 import com.example.wavetable.ui.theme.AppTheme
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.wavetable.viewmodel.AuthViewModel
 
 class Register : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,24 +61,22 @@ class Register : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppTheme {
-
-                }
+                RegisterApp(navController = rememberNavController())
             }
         }
+    }
 }
 
 @Composable
 fun RegisterApp(
-    modifier: Modifier =Modifier,
-    navController: NavController
+    navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("")}
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
+
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     val colorScheme = MaterialTheme.colorScheme
 
     LazyColumn(
@@ -120,19 +126,20 @@ fun RegisterApp(
                         color = colorScheme.onSecondary
                     )
                 }
-                // Username
+
+                // Email
                 TextField(
-                    value = username,
-                    onValueChange = { username = it },
+                    value = email,
+                    onValueChange = { email = it },
                     label = {
                         Text(
-                            "Username",
+                            "Email",
                             style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onSurface
                         )
                     },
-                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = colorScheme.secondaryContainer,
                         unfocusedContainerColor = Color.Transparent
@@ -162,126 +169,103 @@ fun RegisterApp(
                     )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                // FirstName
-                TextField(
-                    value = firstName,
-                    onValueChange = { firstName = it },
-                    label = {
-                        Text(
-                            "First Name",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = colorScheme.onSurface
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.secondaryContainer,
-                        unfocusedContainerColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Last Name
-                TextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = {
-                        Text(
-                            "Last Name",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = colorScheme.onSurface
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.secondaryContainer,
-                        unfocusedContainerColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Email
-                TextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = {
-                        Text(
-                            "Email",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = colorScheme.onSurface
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.secondaryContainer,
-                        unfocusedContainerColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Address
-                TextField(
-                    value = address,
-                    onValueChange = { address = it },
-                    label = {
-                        Text(
-                            "Address",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = colorScheme.onSurface
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = colorScheme.secondaryContainer,
-                        unfocusedContainerColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Phone Number
-                TextField(
-                    value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    singleLine = true,
-                    label = {
-                        Text(
-                            "Phone Number",
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Set keyboard type to number
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        unfocusedContainerColor = Color.Transparent
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
             }
+
+            // Show error message if any
+            when (val state = authState) {
+                is AuthViewModel.AuthState.Error -> {
+                    Text(
+                        text = state.message,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                is AuthViewModel.AuthState.Success -> {
+                    LaunchedEffect(Unit) {
+                        navController.navigate("login")
+                    }
+                }
+                else -> {}
+            }
+
             Button(
-                onClick = { navController.navigate("login") },
+                onClick = { 
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        authViewModel.register(email, password)
+                    }
+                },
                 modifier = Modifier
                     .padding(horizontal = 40.dp, vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorScheme.secondaryContainer,
                     contentColor = colorScheme.onSecondaryContainer
-                )
+                ),
+                enabled = email.isNotEmpty() && password.isNotEmpty() && 
+                         authState !is AuthViewModel.AuthState.Loading
             ) {
-                Text(
-                    "Register",
-                    color = colorScheme.onSecondaryContainer,
-                    style = MaterialTheme.typography.displaySmall,
-                    fontSize = 30.sp
-                )
+                if (authState is AuthViewModel.AuthState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = colorScheme.onSecondaryContainer
+                    )
+                } else {
+                    Text(
+                        "Register",
+                        color = colorScheme.onSecondaryContainer,
+                        style = MaterialTheme.typography.displaySmall,
+                        fontSize = 30.sp
+                    )
+                }
             }
         }
     }
 }
+
+@Composable
+fun RegisterScreen(navController: NavHostController) {
+    val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
+    
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Your existing UI components...
+
+        when (val state = authState) {
+            is AuthViewModel.AuthState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is AuthViewModel.AuthState.Success -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate("login")
+                }
+            }
+            is AuthViewModel.AuthState.Error -> {
+                Text(
+                    text = state.message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+            else -> { /* Initial state, do nothing */ }
+        }
+
+        Button(
+            onClick = { authViewModel.register(email, password) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Register")
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun RegPrev() {

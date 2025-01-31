@@ -11,7 +11,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,19 +18,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,27 +44,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.wavetable.ContentSection
-import com.example.wavetable.DetailedItemView
 import com.example.wavetable.ListDisplay
 import com.example.wavetable.R
 import com.example.wavetable.data.Datasource
 import com.example.wavetable.model.Brand
 import com.example.wavetable.model.Item
-import com.example.wavetable.navbar.BottomNav
-import com.example.wavetable.navbar.TopNav
 import com.example.wavetable.ui.theme.AppTheme
+import com.example.wavetable.viewmodel.ItemViewModel
 import kotlinx.coroutines.delay
+import android.app.Application
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelProvider
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import com.example.wavetable.components.NetworkStatusIndicator
+import com.google.firebase.Firebase
+import com.google.firebase.initialize
 
 class MainMenu : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Firebase.initialize(this)
         setContent {
             AppTheme {
                 MainUI(navController = rememberNavController())
@@ -74,9 +83,22 @@ class MainMenu : ComponentActivity() {
 }
 
 @Composable
-fun MainUI(navController: NavHostController, modifier: Modifier = Modifier) {
+fun MainUI(navController: NavHostController, itemViewModel: ItemViewModel = viewModel()) {
+    val items by itemViewModel.items.collectAsState()
+    var isLoading by rememberSaveable { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        itemViewModel.getItems()
+    }
+
+    // Update loading state based on items
+    LaunchedEffect(items) {
+        isLoading = items.isEmpty()
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,13 +108,42 @@ fun MainUI(navController: NavHostController, modifier: Modifier = Modifier) {
                     Slideshow()
                 }
                 ContentSection(title = "New Releases") {
-                    ListDisplay(
-                        elements = Datasource().loadItems(),
-                        content = { item ->
-                            // Use navController to navigate to the detailed view
-                            ItemCard(item = item, navController = navController)
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(48.dp),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "Loading items...",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
                         }
-                    )
+                    } else if (items.isNotEmpty()) {
+                        LazyRow {
+                            items(items) { item ->
+                                ItemCard(item = item, navController = navController)
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = "No items available",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
                 }
                 ContentSection(title = "Brands") {
                     ListDisplay(
@@ -115,48 +166,38 @@ fun MainUI(navController: NavHostController, modifier: Modifier = Modifier) {
             }
         }
     }
-
-
+}
 @Composable
 fun ItemCard(item: Item, navController: NavHostController, modifier: Modifier = Modifier) {
-    
-    Card(modifier = modifier
-        .padding(8.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .width(200.dp)
-        .height(250.dp)
-        .border(
-            width = 1.dp, color = MaterialTheme.colorScheme.onSurface,
-            shape = RoundedCornerShape(16.dp)
-        )
-        .clickable {
-            navController.navigate("detailedItemView/${item.imageResourceId}")
-        }
+    Card(
+        modifier = modifier
+            .padding(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .width(200.dp)
+            .height(300.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .clickable {
+                // Navigate to DetailedItemView with the item's ID
+                navController.navigate("detailedItemView/${item.id}")
+            }
     ) {
-        Column(
-            horizontalAlignment = Alignment.Start
-        ) {
-            Image(
-                painter = painterResource(item.imageResourceId),
-                contentDescription = stringResource(item.stringResourceId),
+        Column(horizontalAlignment = Alignment.Start) {
+            AsyncImage(
+                model = item.image,
+                contentDescription = item.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
-                    .background(Color.White)
+                    .height(220.dp)
+                    .background(Color.White),
+                contentScale = ContentScale.Crop
             )
-            Row(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                Image(
-                    painter = painterResource(item.brandImgResID),
-                    contentDescription = stringResource(item.brandTxtID),
-                    modifier = Modifier
-                        .height(20.dp)
-                        .background(Color.White)
-                        .fillMaxWidth()
-                )
-            }
             Divider(color = MaterialTheme.colorScheme.onSurface)
             Text(
-                text = stringResource(item.stringResourceId),
+                text = item.name,
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.headlineSmall,
@@ -170,7 +211,6 @@ fun ItemCard(item: Item, navController: NavHostController, modifier: Modifier = 
         }
     }
 }
-
 @Composable
 fun CategoryCard(category: String, modifier: Modifier = Modifier) {
     Card(
@@ -243,7 +283,7 @@ fun Slideshow(slideInterval: Long = 5000) {
         R.drawable.promo3
     )
 
-    var currentIndex by remember { mutableStateOf(0) }
+    var currentIndex by rememberSaveable { mutableStateOf(0) }
 
     // Update the current index after every slideInterval duration
     LaunchedEffect(currentIndex) {
@@ -262,7 +302,7 @@ fun Slideshow(slideInterval: Long = 5000) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(imageHeight))
-}
+    }
 }
 
 @Preview
