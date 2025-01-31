@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "584293877781",
+    "firebase_url": "https://wavetable-467f5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "wavetable-467f5",
+    "storage_bucket": "wavetable-467f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584293877781:android:826a536827a69daef0e61c",
+        "android_client_info": {
+          "package_name": "com.example.wavetable"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCf_aNBD8o5s1F2UIRF9qKg0uK8j47QmU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
