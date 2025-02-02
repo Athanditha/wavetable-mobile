@@ -97,6 +97,8 @@ class WishlistViewModel : ViewModel() {
             }
         }
     }
+
+
 }
 
 

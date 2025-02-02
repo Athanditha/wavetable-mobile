@@ -42,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -102,7 +103,7 @@ fun ContentSection(
 fun DetailedItemView(id: String?, navController: NavHostController, modifier: Modifier = Modifier) {
     val itemViewModel: ItemViewModel = viewModel()
     var isLoading by remember { mutableStateOf(true) }
-    var quantity by remember { mutableStateOf(1) }
+    var quantity by rememberSaveable { mutableStateOf(1) }
 
     LaunchedEffect(id) {
         Log.d("DetailedItemView", "Starting LaunchedEffect with ID: $id")
@@ -166,7 +167,10 @@ fun DetailedItemView(id: String?, navController: NavHostController, modifier: Mo
                             .fillMaxSize()
                             .background(
                                 brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.2f))
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.2f)
+                                    )
                                 )
                             )
                     )
