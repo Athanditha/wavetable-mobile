@@ -27,7 +27,7 @@ class WishlistViewModel : ViewModel() {
     }
 
     private val api = Retrofit.Builder()
-        .baseUrl("http://ngrok-url-here.ngrok-free.app")
+        .baseUrl("https://de89-112-134-191-65.ngrok-free.app/")
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(
             GsonConverterFactory.create(

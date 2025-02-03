@@ -90,119 +90,122 @@ fun AccountUI(navController: NavHostController) {
         }
     }
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface)
-                .clickable { launcher.launch() },
-            contentAlignment = Alignment.Center
-        ) {
-            if (profileImageUri != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(profileImageUri),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else {
-                Text(
-                    text = "Add Photo",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-        // Profile Section
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Column(
+        item {
+            Box(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .size(120.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .clickable { launcher.launch() },
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "Account Information",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                
-                Divider(modifier = Modifier.padding(vertical = 8.dp))
-                
-                // Email
-                Column {
-                    Text(
-                        text = "Email",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                if (profileImageUri != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(profileImageUri),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier.fillMaxSize()
                     )
+                } else {
                     Text(
-                        text = currentUser?.email ?: "Not signed in",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                // User ID
-                Column {
-                    Text(
-                        text = "User ID",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = currentUser?.uid ?: "Not available",
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = "Add Photo",
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         }
 
-        // Logout Button
-        Button(
-            onClick = {
-                authViewModel.logout { success ->
-                    if (success) {
-                        Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
-                        navController.navigate("login") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    } else {
-                        Toast.makeText(context, "Logout failed. Please try again.", Toast.LENGTH_SHORT).show()
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Account Information",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+
+                    Column {
+                        Text(
+                            text = "Email",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = currentUser?.email ?: "Not signed in",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Column {
+                        Text(
+                            text = "User ID",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = currentUser?.uid ?: "Not available",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer
-            )
-        ) {
-            Text(
-                text = "Logout",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(8.dp)
-            )
+            }
+        }
+
+        item {
+            Button(
+                onClick = {
+                    authViewModel.logout { success ->
+                        if (success) {
+                            Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                            navController.navigate("login") {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else {
+                            Toast.makeText(context, "Logout failed. Please try again.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                )
+            ) {
+                Text(
+                    text = "Logout",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
     }
 }
