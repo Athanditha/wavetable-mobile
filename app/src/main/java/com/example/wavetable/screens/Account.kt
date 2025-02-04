@@ -177,6 +177,30 @@ fun AccountUI(navController: NavHostController) {
             }
         }
 
+        // Change Password Button
+        item {
+            Button(
+                onClick = {
+                    navController.navigate("changePassword") // Navigate to Change Password Screen
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = "Change Password",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
+
+        // Logout Button
         item {
             Button(
                 onClick = {

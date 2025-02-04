@@ -3,19 +3,14 @@ package com.example.wavetable.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wavetable.helpers.AuthRepository
-import com.google.firebase.Firebase
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
     val authRepository = AuthRepository()
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
+    val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState
 
     init {
@@ -86,4 +81,39 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-} 
+    fun changePassword(currentPassword: String, newPassword: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = authRepository.changePassword(currentPassword, newPassword)
+            result.fold(
+                onSuccess = {
+                    _authState.value = AuthState.Success("Password changed successfully")
+                },
+                onFailure = {
+                    _authState.value = AuthState.Error(it.message ?: "Password change failed")
+                }
+            )
+        }
+    }
+
+    fun forgotPassword(email: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val result = authRepository.forgotPassword(email)
+                result.fold(
+                    onSuccess = {
+                        _authState.value = AuthState.Success("Password reset email sent")
+                    },
+                    onFailure = {
+                        _authState.value = AuthState.Error(it.message ?: "Failed to send password reset email")
+                    }
+                )
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Failed to send password reset email")
+            }
+        }
+
+    }
+
+}

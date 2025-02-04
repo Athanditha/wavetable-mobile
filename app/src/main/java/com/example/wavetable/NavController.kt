@@ -32,8 +32,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.wavetable.navbar.BottomNav
 import com.example.wavetable.navbar.TopNav
 import com.example.wavetable.screens.CartUI
+import com.example.wavetable.screens.ChangePasswordScreen
+import com.example.wavetable.screens.ForgotPasswordScreen
 import com.example.wavetable.screens.RegisterApp
 import com.example.wavetable.screens.WishlistUI
+import com.example.wavetable.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -64,9 +67,9 @@ fun AppNav(modifier: Modifier = Modifier) {
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry.value?.destination?.route
-
+    val authViewModel = AuthViewModel()
     val showSearch = currentRoute == "home"
-    val showTopAndBottomNav = currentRoute != "login" && currentRoute != "register"
+    val showTopAndBottomNav = currentRoute != "login" && currentRoute != "register" && currentRoute != "forgot_password"
 
     Scaffold(
         modifier = modifier,
@@ -139,6 +142,10 @@ fun AppNav(modifier: Modifier = Modifier) {
                     ItemsUI(navController = navController)
                 }
             }
+            composable("forgot_password") {
+                ForgotPasswordScreen(navController)
+            }
+            composable("changePassword") { ChangePasswordScreen( authViewModel = authViewModel, navController = navController) }
             composable("wishlist") {
                 AppTheme {
                     WishlistUI(navController = navController)

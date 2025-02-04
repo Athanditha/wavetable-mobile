@@ -224,6 +224,19 @@ fun LoginLMNT(
                     )
                 )
             }
+            Row(
+                modifier = Modifier.padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ClickableText(
+                    text = AnnotatedString("Forgot Password?"),
+                    onClick = { navController.navigate("forgot_password") },
+                    style = TextStyle(
+                        color = colorScheme.primary,
+                        fontSize = 14.sp
+                    )
+                )
+            }
         }
     }
 }
