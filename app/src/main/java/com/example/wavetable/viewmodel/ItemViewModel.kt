@@ -42,7 +42,7 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private val api = Retrofit.Builder()
-        .baseUrl("https://de89-112-134-191-65.ngrok-free.app/")
+        .baseUrl("https://6942-112-134-186-245.ngrok-free.app/")
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(
             GsonConverterFactory.create(

@@ -3,9 +3,14 @@ package com.example.wavetable.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wavetable.helpers.AuthRepository
+import com.google.firebase.Firebase
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
     val authRepository = AuthRepository()
@@ -80,4 +85,5 @@ class AuthViewModel : ViewModel() {
             onResult(false)
         }
     }
+
 } 
