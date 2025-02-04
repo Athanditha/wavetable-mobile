@@ -163,16 +163,6 @@ fun CartUI() {
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        IconButton(
-                            onClick = { /* TODO: Edit address */ },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit Address",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
                     }
                     
                     when (address) {
